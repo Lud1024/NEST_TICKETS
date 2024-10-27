@@ -47,7 +47,7 @@ export class UsuariosController {
 
     const result = await this.usuariosService.autenticar(nombre_usuario, contraseña);
     if (result.success) {
-      return { success: true, message: 'Autenticación exitosa' };
+      return { success: true, message: 'Autenticación exitosa', uuid: result.id_usuario };
     } else {
       throw new NotFoundException('Credenciales incorrectas');
     }

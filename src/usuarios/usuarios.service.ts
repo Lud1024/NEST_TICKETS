@@ -58,18 +58,23 @@ export class UsuariosService {
     return this.usuarioRepository.delete(id);
   }
 
-  // Método para autenticar al usuario
-  async autenticar(nombre_usuario: string, contraseña: string): Promise<{ success: boolean }> {
-    const usuario = await this.usuarioRepository.findOneBy({ nombre_usuario });
+ // Método para autenticar al usuario
+async autenticar(nombre_usuario: string, contraseña: string): Promise<{ success: boolean, id_usuario?: string }> {
+  const usuario = await this.usuarioRepository.findOneBy({ nombre_usuario });
 
-    if (!usuario) {
-      throw new NotFoundException(`El usuario con nombre ${nombre_usuario} no existe`);
-    }
-
-    // **Comparar la contraseña proporcionada con la almacenada**
-    const esMatch = await bcrypt.compare(contraseña, usuario.contraseña);
-    return { success: esMatch };
+  if (!usuario) {
+    throw new NotFoundException(`El usuario con nombre ${nombre_usuario} no existe`);
   }
+
+  // Comparar la contraseña proporcionada con la almacenada
+  const esMatch = await bcrypt.compare(contraseña, usuario.contraseña);
+
+  if (esMatch) {
+    return { success: true, id_usuario: usuario.id_usuario };
+  }
+
+  return { success: false };
+}
 
   // Verificar la palabra secreta para la recuperación de contraseña
   async verificarPalabraSecreta(nombre_usuario: string, palabra_secreta: string): Promise<{ esValida: boolean, id_usuario?: string }> {
